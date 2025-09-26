@@ -1,14 +1,13 @@
 // @ts-ignore;
 import React, { useState } from 'react';
 // @ts-ignore;
-import { Button, Tabs, TabsContent, TabsList, TabsHeader, TabsTrigger, Card, CardContent, CardDescription, CardHeader, CardTitle, useToast } from '@/components/ui';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, useToast, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
 
 import { FileUploadSection } from '@/components/DigitalHuman/FileUploadSection';
 import { AvatarPreview } from '@/components/DigitalHuman/AvatarPreview';
-import { VideoSettings } from '@/components/DigitalHuman/VideoSettings'; 
+import { VideoSettings } from '@/components/DigitalHuman/VideoSettings';
 import { GenerationModal } from '@/components/DigitalHuman/GenerationModal';
 import { WorksList } from '@/components/DigitalHuman/WorksList';
-import { SaveToDatabase } from '@/components/DigitalHuman/SaveToDatabase';
 export default function DigitalHumanPage(props) {
   const {
     $w
@@ -21,7 +20,6 @@ export default function DigitalHumanPage(props) {
     avatar: null,
     audio: null
   });
-  const [selectedSystem, setSelectedSystem] = useState('ali-dh');
   const [videoSettings, setVideoSettings] = useState({
     resolution: '1080p',
     fps: 30,
@@ -82,7 +80,6 @@ export default function DigitalHumanPage(props) {
             duration: videoData.duration,
             fileSize: videoData.size,
             settings: videoSettings,
-            system: selectedSystem,
             createdAt: new Date().toISOString()
           }
         }
@@ -121,7 +118,7 @@ export default function DigitalHumanPage(props) {
                 <FileUploadSection type="audio" title="上传音频" description="支持 MP3、WAV 格式，最大 50MB" accept="audio/*" onFileUpload={file => handleFileUpload('audio', file)} uploadedFile={uploadedFiles.audio} />
               </div>
 
-              <div className="space-y-6"> 
+              <div className="space-y-6">
                 <VideoSettings settings={videoSettings} onSettingsChange={setVideoSettings} />
 
                 <Card>
