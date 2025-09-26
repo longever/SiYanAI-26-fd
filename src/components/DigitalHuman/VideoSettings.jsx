@@ -51,11 +51,6 @@ export function VideoSettings({
           </SelectContent>
         </Select>
       </div>
-
-      <div className="space-y-2">
-        <Label>视频时长: {settings.duration}秒</Label>
-        <Slider value={[settings.duration]} onValueChange={([value]) => handleSettingChange('duration', value)} min={5} max={300} step={5} />
-      </div>
     </CardContent>
   </Card>;
 }

@@ -8,17 +8,17 @@ export function SystemSelector({
   onChange
 }) {
   const systems = [{
-    value: 'default',
-    label: '默认系统'
+    value: 'ali',
+    label: '阿里云'
   }, {
-    value: 'business',
-    label: '商务系统'
+    value: 'tencent',
+    label: '腾讯云'
   }, {
-    value: 'education',
-    label: '教育系统'
+    value: 'baidu',
+    label: '百度智能云'
   }, {
-    value: 'entertainment',
-    label: '娱乐系统'
+    value: 'huawei',
+    label: '华为云'
   }];
   return <div className="space-y-2">
       <Label>选择系统</Label>

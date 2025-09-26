@@ -7,9 +7,9 @@ import { Upload, Sparkles, Play } from 'lucide-react';
 
 import { FileUploadSection } from '@/components/DigitalHuman/FileUploadSection';
 import { AvatarPreview } from '@/components/DigitalHuman/AvatarPreview';
-import { DigitalHumanSystemSelector } from '@/components/DigitalHuman/SystemSelector';
-import { DigitalHumanVideoSettings } from '@/components/DigitalHuman/VideoSettings';
-import { DigitalHumanGenerationModal } from '@/components/DigitalHuman/GenerationModal';
+import { SystemSelector } from '@/components/DigitalHuman/SystemSelector';
+import { VideoSettings } from '@/components/DigitalHuman/VideoSettings';
+import { GenerationModal } from '@/components/DigitalHuman/GenerationModal';
 import { WorksList } from '@/components/DigitalHuman/WorksList';
 export default function DigitalHumanPage(props) {
   const [selectedSystem, setSelectedSystem] = useState('ali');
@@ -65,7 +65,7 @@ export default function DigitalHumanPage(props) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <FileUploadSection onFileSelect={setAudioFile} />
+                  <FileUploadSection onFileUpload={setAudioFile} acceptedTypes="audio/*" maxSize={50} />
                 </CardContent>
               </Card>
 
@@ -74,7 +74,7 @@ export default function DigitalHumanPage(props) {
                   <CardTitle>视频设置</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <DigitalHumanVideoSettings settings={videoSettings} onSettingsChange={setVideoSettings} />
+                  <VideoSettings settings={videoSettings} onSettingsChange={setVideoSettings} />
                 </CardContent>
               </Card>
             </div>
@@ -88,7 +88,7 @@ export default function DigitalHumanPage(props) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <DigitalHumanSystemSelector selectedSystem={selectedSystem} onSystemChange={setSelectedSystem} />
+                  <SystemSelector value={selectedSystem} onChange={setSelectedSystem} />
                 </CardContent>
               </Card>
 
@@ -97,7 +97,7 @@ export default function DigitalHumanPage(props) {
                   <CardTitle>选择形象</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <AvatarPreview selectedSystem={selectedSystem} selectedAvatar={selectedAvatar} onAvatarSelect={setSelectedAvatar} />
+                  <AvatarPreview imageUrl={selectedAvatar} onRemove={() => setSelectedAvatar(null)} />
                 </CardContent>
               </Card>
 
@@ -114,7 +114,7 @@ export default function DigitalHumanPage(props) {
         </TabsContent>
       </Tabs>
 
-      <DigitalHumanGenerationModal isOpen={showGenerationModal} onClose={() => setShowGenerationModal(false)} generationData={generationData} />
+      <GenerationModal isOpen={showGenerationModal} onClose={() => setShowGenerationModal(false)} generationData={generationData} />
     </div>
   </div>;
 }
