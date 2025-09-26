@@ -1,111 +1,148 @@
 // @ts-ignore;
 import React, { useState } from 'react';
 // @ts-ignore;
-import { Card, CardContent, CardHeader, CardTitle, Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
-// @ts-ignore;
-import { Upload, Sparkles, Play } from 'lucide-react';
+import { Button, Tabs, TabsContent, TabsList, TabsHeader, TabsTrigger, Card, CardContent, CardDescription, CardHeader, CardTitle, useToast } from '@/components/ui';
 
 import { FileUploadSection } from '@/components/DigitalHuman/FileUploadSection';
 import { AvatarPreview } from '@/components/DigitalHuman/AvatarPreview';
-import { SystemSelector } from '@/components/DigitalHuman/SystemSelector';
 import { VideoSettings } from '@/components/DigitalHuman/VideoSettings';
+import { SystemSelector } from '@/components/DigitalHuman/SystemSelector';
 import { GenerationModal } from '@/components/DigitalHuman/GenerationModal';
 import { WorksList } from '@/components/DigitalHuman/WorksList';
+import { SaveToDatabase } from '@/components/DigitalHuman/SaveToDatabase';
 export default function DigitalHumanPage(props) {
-  const [selectedSystem, setSelectedSystem] = useState('ali');
-  const [selectedAvatar, setSelectedAvatar] = useState(null);
-  const [audioFile, setAudioFile] = useState(null);
+  const {
+    $w
+  } = props;
+  const {
+    toast
+  } = useToast();
+  const [activeTab, setActiveTab] = useState('create');
+  const [uploadedFiles, setUploadedFiles] = useState({
+    avatar: null,
+    audio: null
+  });
+  const [selectedSystem, setSelectedSystem] = useState('ali-dh');
   const [videoSettings, setVideoSettings] = useState({
     resolution: '1080p',
     fps: 30,
-    quality: 'high'
+    quality: 'high',
+    duration: 30
   });
+  const [isGenerating, setIsGenerating] = useState(false);
   const [showGenerationModal, setShowGenerationModal] = useState(false);
-  const [generationData, setGenerationData] = useState(null);
-  const handleGenerate = () => {
-    if (!audioFile || !selectedAvatar) {
-      alert('请先上传音频文件并选择数字人形象');
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [generatedVideo, setGeneratedVideo] = useState(null);
+  const handleFileUpload = (type, file) => {
+    setUploadedFiles(prev => ({
+      ...prev,
+      [type]: file
+    }));
+  };
+  const handleGenerateVideo = async () => {
+    if (!uploadedFiles.avatar || !uploadedFiles.audio) {
+      toast({
+        title: "缺少文件",
+        description: "请上传头像和音频文件",
+        variant: "destructive"
+      });
       return;
     }
-    setGenerationData({
-      audioFile,
-      selectedAvatar,
-      videoSettings,
-      system: selectedSystem,
-      audioUrl: audioFile.url || URL.createObjectURL(audioFile),
-      title: audioFile.name || '数字人视频'
-    });
+    setIsGenerating(true);
     setShowGenerationModal(true);
+    setGenerationProgress(0);
+
+    // 模拟生成过程
+    const interval = setInterval(() => {
+      setGenerationProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsGenerating(false);
+          setGeneratedVideo({
+            url: 'https://example.com/generated-video.mp4',
+            thumbnail: 'https://example.com/thumbnail.jpg',
+            duration: videoSettings.duration,
+            size: '25.6 MB'
+          });
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 500);
   };
-  return <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <div className="max-w-7xl mx-auto px-4 py-8">
+  const handleSaveToDatabase = async videoData => {
+    try {
+      const result = await $w.cloud.callDataSource({
+        dataSourceName: 'digital_human_videos',
+        methodName: 'wedaCreateV2',
+        params: {
+          data: {
+            title: `数字人视频 - ${new Date().toLocaleString()}`,
+            videoUrl: videoData.url,
+            thumbnailUrl: videoData.thumbnail,
+            duration: videoData.duration,
+            fileSize: videoData.size,
+            settings: videoSettings,
+            system: selectedSystem,
+            createdAt: new Date().toISOString()
+          }
+        }
+      });
+      toast({
+        title: "保存成功",
+        description: "视频已保存到作品库"
+      });
+      setActiveTab('works');
+    } catch (error) {
+      toast({
+        title: "保存失败",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+  return <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+    <div className="max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          数字人视频生成
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          上传音频，选择数字人形象，一键生成专业视频
-        </p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">数字人视频生成</h1>
+        <p className="text-gray-600">上传头像和音频，生成逼真的数字人视频</p>
       </div>
 
-      <Tabs defaultValue="create" className="space-y-6">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="create">创建视频</TabsTrigger>
           <TabsTrigger value="works">我的作品</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="create">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Upload className="w-5 h-5" />
-                    上传音频
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <FileUploadSection onFileSelect={setAudioFile} />
-                </CardContent>
-              </Card>
+        <TabsContent value="create" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <FileUploadSection type="avatar" title="上传头像" description="支持 JPG、PNG 格式，建议尺寸 512x512" accept="image/*" onFileUpload={file => handleFileUpload('avatar', file)} uploadedFile={uploadedFiles.avatar} />
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>视频设置</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <VideoSettings settings={videoSettings} onSettingsChange={setVideoSettings} />
-                </CardContent>
-              </Card>
+              <FileUploadSection type="audio" title="上传音频" description="支持 MP3、WAV 格式，最大 50MB" accept="audio/*" onFileUpload={file => handleFileUpload('audio', file)} uploadedFile={uploadedFiles.audio} />
             </div>
 
             <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5" />
-                    选择系统
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <SystemSelector selectedSystem={selectedSystem} onSystemChange={setSelectedSystem} />
-                </CardContent>
-              </Card>
+              <SystemSelector selectedSystem={selectedSystem} onSystemChange={setSelectedSystem} />
+
+              <VideoSettings settings={videoSettings} onSettingsChange={setVideoSettings} />
 
               <Card>
                 <CardHeader>
-                  <CardTitle>选择形象</CardTitle>
+                  <CardTitle>预览</CardTitle>
+                  <CardDescription>预览数字人效果</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <AvatarPreview selectedSystem={selectedSystem} selectedAvatar={selectedAvatar} onAvatarSelect={setSelectedAvatar} />
+                  <AvatarPreview avatarFile={uploadedFiles.avatar} audioFile={uploadedFiles.audio} />
                 </CardContent>
               </Card>
-
-              <Button className="w-full" size="lg" onClick={handleGenerate} disabled={!audioFile || !selectedAvatar}>
-                <Play className="w-5 h-5 mr-2" />
-                开始生成
-              </Button>
             </div>
+          </div>
+
+          <div className="flex justify-center">
+            <Button size="lg" onClick={handleGenerateVideo} disabled={!uploadedFiles.avatar || !uploadedFiles.audio || isGenerating} className="px-8">
+              {isGenerating ? '生成中...' : '开始生成'}
+            </Button>
           </div>
         </TabsContent>
 
@@ -114,7 +151,7 @@ export default function DigitalHumanPage(props) {
         </TabsContent>
       </Tabs>
 
-      <GenerationModal isOpen={showGenerationModal} onClose={() => setShowGenerationModal(false)} generationData={generationData} />
+      <GenerationModal open={showGenerationModal} onOpenChange={setShowGenerationModal} progress={generationProgress} isGenerating={isGenerating} generatedVideo={generatedVideo} onSave={() => generatedVideo && handleSaveToDatabase(generatedVideo)} />
     </div>
   </div>;
 }
