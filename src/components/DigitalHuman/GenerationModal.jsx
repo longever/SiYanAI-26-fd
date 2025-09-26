@@ -6,7 +6,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Progress, Alert, Aler
 import { Play, Download, Eye, Loader2 } from 'lucide-react';
 
 import { SaveToDatabase } from './SaveToDatabase';
-import { DigitalHumanAudioPlayer } from './DigitalHumanAudioPlayer';
+import { AudioPlayer } from './AudioPlayer';
 export function DigitalHumanGenerationModal({
   isOpen,
   onClose,
@@ -118,7 +118,7 @@ export function DigitalHumanGenerationModal({
                     </div>
                   </div>
 
-                  <DigitalHumanAudioPlayer audioUrl={generationData?.audioUrl} title={generationData?.title || '数字人音频'} />
+                  <AudioPlayer audioUrl={generationData?.audioUrl} title={generationData?.title || '数字人音频'} />
 
                   <div className="flex gap-2">
                     <Button className="flex-1" onClick={() => window.open(result.videoUrl, '_blank')}>
