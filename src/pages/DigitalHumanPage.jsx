@@ -5,8 +5,7 @@ import { Button, Tabs, TabsContent, TabsList, TabsHeader, TabsTrigger, Card, Car
 
 import { FileUploadSection } from '@/components/DigitalHuman/FileUploadSection';
 import { AvatarPreview } from '@/components/DigitalHuman/AvatarPreview';
-import { VideoSettings } from '@/components/DigitalHuman/VideoSettings';
-import { SystemSelector } from '@/components/DigitalHuman/SystemSelector';
+import { VideoSettings } from '@/components/DigitalHuman/VideoSettings'; 
 import { GenerationModal } from '@/components/DigitalHuman/GenerationModal';
 import { WorksList } from '@/components/DigitalHuman/WorksList';
 import { SaveToDatabase } from '@/components/DigitalHuman/SaveToDatabase';
@@ -122,9 +121,7 @@ export default function DigitalHumanPage(props) {
                 <FileUploadSection type="audio" title="上传音频" description="支持 MP3、WAV 格式，最大 50MB" accept="audio/*" onFileUpload={file => handleFileUpload('audio', file)} uploadedFile={uploadedFiles.audio} />
               </div>
 
-              <div className="space-y-6">
-                <SystemSelector selectedSystem={selectedSystem} onSystemChange={setSelectedSystem} />
-
+              <div className="space-y-6"> 
                 <VideoSettings settings={videoSettings} onSettingsChange={setVideoSettings} />
 
                 <Card>
