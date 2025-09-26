@@ -65,7 +65,7 @@ export default function DigitalHumanPage(props) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <FileUploadSection onFileUpload={setAudioFile} acceptedTypes="audio/*" maxSize={50} />
+                  <FileUploadSection onFileSelect={setAudioFile} />
                 </CardContent>
               </Card>
 
@@ -88,7 +88,7 @@ export default function DigitalHumanPage(props) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <SystemSelector value={selectedSystem} onChange={setSelectedSystem} />
+                  <SystemSelector selectedSystem={selectedSystem} onSystemChange={setSelectedSystem} />
                 </CardContent>
               </Card>
 
@@ -97,7 +97,7 @@ export default function DigitalHumanPage(props) {
                   <CardTitle>选择形象</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <AvatarPreview imageUrl={selectedAvatar} onRemove={() => setSelectedAvatar(null)} />
+                  <AvatarPreview selectedSystem={selectedSystem} selectedAvatar={selectedAvatar} onAvatarSelect={setSelectedAvatar} />
                 </CardContent>
               </Card>
 
